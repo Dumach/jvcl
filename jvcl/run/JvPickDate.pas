@@ -947,7 +947,8 @@ begin
   Width := Max(PopupCalendarSize.X, 180);
 
   Color := clBtnFace;
-  FontSetDefault(Font);
+  if Screen.PixelsPerInch = cDefaultPixelsPerInch then //zs
+    FontSetDefault(Font);
   if AOwner is TControl then
     ShowHint := TControl(AOwner).ShowHint
   else

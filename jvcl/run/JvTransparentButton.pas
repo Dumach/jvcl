@@ -922,6 +922,7 @@ var
   Flags, MidX, MidY: Integer;
   DC: HDC; { Col: TColor; }
   TmpRect: TRect;
+  TmpSpacing: Integer;
 begin
   if (bsMouseInside in MouseStates) and HotTrack then
     Canvas.Font := HotTrackFont
@@ -948,6 +949,7 @@ begin
   MidX := TmpRect.Right - TmpRect.Left;
   Flags := DT_CENTER;
   { div 2 and shr 1 generates the exact same assembler code... }
+{
   case Self.TextAlign of
     ttaTop:
       OffsetRect(TmpRect, Width div 2 - MidX div 2, ARect.Top - MidY - Spacing);
@@ -968,13 +970,42 @@ begin
     ttaLeft:
       OffsetRect(TmpRect, Spacing, Height div 2 - MidY div 2);
   end;
+
+}
+  // HACK 2013-06-06
+  if InternalList.Count > 0 then
+    TmpSpacing := Spacing
+  else
+    TmpSpacing := 0;
+  case Self.TextAlign of
+    ttaTop:
+      OffsetRect(TmpRect, Width div 2 - MidX div 2, ARect.Top - MidY - TmpSpacing);
+    ttaTopLeft:
+      OffsetRect(TmpRect, ARect.Left - MidX - TmpSpacing, ARect.Top - MidY - TmpSpacing);
+    ttaTopRight:
+      OffsetRect(TmpRect, ARect.Right + TmpSpacing, ARect.Top - MidY - TmpSpacing);
+    ttaBottom:
+      OffsetRect(TmpRect, Width div 2 - MidX div 2, ARect.Bottom + TmpSpacing);
+    ttaBottomLeft:
+      OffsetRect(TmpRect, ARect.Left - MidX - TmpSpacing, ARect.Bottom + TmpSpacing);
+    ttaBottomRight:
+      OffsetRect(TmpRect, ARect.Right + TmpSpacing, ARect.Bottom + TmpSpacing);
+    ttaCenter:
+      OffsetRect(TmpRect, Width div 2 - MidX div 2, Height div 2 - MidY div 2);
+    ttaRight:
+      OffsetRect(TmpRect, ARect.Right + TmpSpacing, Height div 2 - MidY div 2);
+    ttaLeft:
+      OffsetRect(TmpRect, ARect.Left - MidX - TmpSpacing, Height div 2 - MidY div 2);
+  end;
+
   if FWordWrap then
     Flags := Flags or DT_WORDBREAK or DT_NOCLIP
   else
     Flags := Flags or DT_SINGLELINE or DT_NOCLIP;
 
   if ((bsMouseDown in MouseStates) or Down) and FShowPressed then
-    OffsetRect(TmpRect, FPressOffset, FPressOffset);
+    if (bsMouseInside in MouseStates) or Down then // HACK 2013-06-06
+      OffsetRect(TmpRect, FPressOffset, FPressOffset);
 
   SetBkMode(DC, Windows.TRANSPARENT);
   if not Enabled then
@@ -1160,7 +1191,9 @@ begin
     end;
 
     { do we need the grayed bitmap ? }
-    if (Flat or (FrameStyle = fsExplorer)) and FAutoGray and not (bsMouseInside in MouseStates) and not Down then
+    //if (Flat or (FrameStyle = fsExplorer)) and FAutoGray and not (bsMouseInside in MouseStates) and not Down then
+    if (Flat or (FrameStyle = fsExplorer)) and FAutoGray // HACK 2013-06-06
+      and not (((bsMouseDown in MouseStates) or Down) and ((bsMouseInside in MouseStates) or Down)) then
       Index := FImList.Count - 2;
 
     { do we need the disabled bitmap ? }
@@ -1169,7 +1202,8 @@ begin
   end;
 
   if ((bsMouseDown in MouseStates) or Down) and FShowPressed then
-    OffsetRect(ARect, FPressOffset, FPressOffset);
+    if (bsMouseInside in MouseStates) or Down then // HACK 2013-06-06
+      OffsetRect(ARect, FPressOffset, FPressOffset);
 
   // Mantis 3641: Do not draw the rectangle if we are transparent, it's of no use.
   if (bsMouseInside in MouseStates) and ((bsMouseDown in MouseStates) or Down) and

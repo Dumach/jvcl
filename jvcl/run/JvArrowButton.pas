@@ -909,9 +909,9 @@ begin
     else
       FState := bsUp;
   end;
-  if FMouseInControl then
-    Canvas.Font := FillFont
-  else
+  //if FMouseInControl then
+  //  Canvas.Font := FillFont
+  //else
     Canvas.Font := Self.Font;
 
   if SplittedButton then

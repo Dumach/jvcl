@@ -522,8 +522,8 @@ begin
   FChangeLink.OnChange := DoImagesChange;
   ControlStyle := ControlStyle + [csOpaque, csReplicatable];
   {$IFDEF JVCLThemesEnabled}
-  if StyleServices.Enabled then
-    ControlStyle := ControlStyle - [csOpaque];
+//  if StyleServices.Enabled then
+//    ControlStyle := ControlStyle - [csOpaque];
   {$ENDIF JVCLThemesEnabled}
 
   FHotTrack := False;
@@ -1085,8 +1085,8 @@ begin
   if Transparent <> Value then
   begin
     {$IFDEF JVCLThemesEnabled}
-    if StyleServices.Enabled then
-      Value := True; // themes aware Labels are always transparent
+//    if StyleServices.Enabled then
+//      Value := True; // themes aware Labels are always transparent
     {$ENDIF JVCLThemesEnabled}
     if Value then
       ControlStyle := ControlStyle - [csOpaque]
@@ -1152,8 +1152,11 @@ begin
   OldValue := MouseOver;
   OtherDragging := KeyPressed(VK_LBUTTON) or Mouse.IsDragging;
 
-  MouseOver := Enabled and not OtherDragging and
+  try
+   MouseOver := Enabled and not OtherDragging and
     (FindDragTarget(Mouse.CursorPos, True) = Self) and IsForegroundTask;
+  except
+  end;
   if MouseOver <> OldValue then
     Invalidate;
 end;
