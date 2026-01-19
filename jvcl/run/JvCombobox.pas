@@ -1761,7 +1761,8 @@ end;
 
 procedure TJvCustomComboBox.KeyPress(var Key: Char);
 begin
-  if ReadOnly and (AutoComplete or (Key = Chr(VK_BACK))) then
+  if (ReadOnly) and (Key = Chr(VK_BACK)) then
+  //if ReadOnly and (AutoComplete or (Key = Chr(VK_BACK))) then
     Key := #0;
   inherited KeyPress(Key);
 end;
@@ -2008,7 +2009,7 @@ begin
   begin
     case Msg.Msg of
       WM_KEYDOWN:
-        if Integer(Msg.WParam) in [VK_DOWN, VK_UP, VK_RIGHT, VK_LEFT, VK_F4] then
+        if Integer(Msg.WParam) in [VK_DOWN, VK_UP, VK_RIGHT, VK_LEFT, VK_F4, VK_HOME, VK_END, VK_PRIOR, VK_NEXT] then
         begin
           // (rom) please english comments
           // see keelab aktiivse itemi vahetamise nooleklahvidega DDL kui CB on aktiivne
@@ -2018,8 +2019,11 @@ begin
       WM_CHAR:
         begin
           // DDL trykkides ei aktiveeriks selle tahega algavat itemit
-          Msg.Result := 0;
-          Exit;
+          if Integer(Msg.WParam)=13 then
+          else begin
+           Msg.Result := 0;
+           Exit;
+          end;
         end;
       WM_SYSKEYDOWN:
         if (Msg.WParam = VK_DOWN) or (Msg.WParam = VK_UP) then

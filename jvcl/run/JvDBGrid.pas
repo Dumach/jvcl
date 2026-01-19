@@ -2890,7 +2890,8 @@ begin
     LockWindowUpdate(Handle);
     try
       inherited MouseUp(Button, Shift, X, Y);
-      Perform(WM_HSCROLL, MakeWParam(SB_THUMBPOSITION, OriginalScrollInfo.nPos), 0); //Repos
+      if Self.Focused then
+         Perform(WM_HSCROLL, MakeWParam(SB_THUMBPOSITION, OriginalScrollInfo.nPos), 0); //Repos
     finally
       LockWindowUpdate(0);
     end;

@@ -1953,6 +1953,7 @@ end;
 
 procedure TJvSpeedBar.AlignItemToGrid(Item: TJvSpeedItem; Data: SizeInt);
 begin
+  exit;
   if Item.Visible then
   begin
     if GetOrientation = boVertical then
