@@ -914,6 +914,8 @@ begin
   //else
     Canvas.Font := Self.Font;
 
+  Canvas.Brush.Color := clBtnFace;  //zs vcl theme text bgcolor fix
+
   if SplittedButton then
     PaintRect := Rect(0, 0, Width - ArrowWidth, Height)
   else

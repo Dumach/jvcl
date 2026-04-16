@@ -1289,7 +1289,11 @@ begin
     else
     begin
       Details := StyleServices.GetElementDetails(ToolButton);
-      StyleServices.DrawElement(Canvas.Handle, Details, PaintRect);
+      // Special case for flat speedbuttons with custom styles. The assumptions
+      // made about the look of ToolBar buttons may not apply, so only paint
+      // the hot and pressed states , leaving normal/disabled to appear flat.
+      if not FFlat or ((Button = tbPushButtonPressed) or (Button = tbPushButtonHot)) then
+        StyleServices.DrawElement(Canvas.Handle, Details, PaintRect);
       StyleServices.GetElementContentRect(Canvas.Handle, Details, PaintRect, PaintRect);
     end;
 
@@ -2574,8 +2578,10 @@ begin
     SetTextColor(DC, ColorToRGB(clBtnShadow));
     DrawGlassableText(DC, Caption, TextBounds, Flags, FPaintOnGlass);
   end
-  else
+  else begin
+    SetTextColor(DC, ColorToRGB(Canvas.Font.Color));
     DrawGlassableText(DC, Caption, TextBounds, Flags, FPaintOnGlass);
+  end;
 end;
 
 function TJvxButtonGlyph.DrawEx(Canvas: TCanvas; const Client: TRect;
